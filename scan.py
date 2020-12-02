@@ -75,12 +75,14 @@ def connected(tag):
 
 
 def play(soundplay):
+    sound1 = "./sound/sound1.mp3"
+    sound2 = "./sound/sound2.mp3"
     while(True):
         queue = soundplay.get()
         if(queue == 0):#入室
-            playsound("sound1.mp3")
+            playsound(sound1)
         elif(queue == 1):#退室
-            playsound("sound2.mp3")
+            playsound(sound2)
 
 def scan():
     while(True):
