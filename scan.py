@@ -20,8 +20,7 @@ def logRecord(scan_time,check,scanID):
 	log = scan_time+","+str(check)+","+scanID+"\n"
 	wlog = open(LOGFILE,"a")
 	wlog.write(log)
-	wlog.close()
-	
+	wlog.close()	
 
 def checkRecord(scanID):
 	rlog = open(CACHE,"r")
@@ -77,9 +76,6 @@ def play(soundplay):
 		if(queue == 0):#入室
 			playsound(sound1)
 		
-
-
-
 p_play = Process(target=play,args=(soundplay,))
 
 if __name__ == "__main__":
