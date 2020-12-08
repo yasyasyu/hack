@@ -83,5 +83,5 @@ if __name__ == "__main__":
 	while(True):
 		clf = nfc.ContactlessFrontend('usb:001:003')
 		clf.connect(rdwr={'on-connect': connected})
-		time.sleep(3)
+		time.sleep(4)
 
