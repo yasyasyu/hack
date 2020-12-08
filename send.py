@@ -6,14 +6,14 @@ import json
 import collections as collect
 import datetime
 day = "".join(list(map(str,str(datetime.datetime.now())))[:10])
-URLFILEPATH = "/home/test/privacy/URLFILE"
-LOG = "/home/test/log/log"+day+".dat"
+URLFILEPATH = "privacy/URLFILE"
+# LOG = "/home/test/log/"+day+".dat"
+LOG = "log/"+day+".dat"
 
 URLfile = open(URLFILEPATH,'r')
 URL = URLfile.readline()
 URLfile.close()
 
-# 暗号化するとしたらここ
 def postData(data,size):
     if(data is None):
         print("params is empty")

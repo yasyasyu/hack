@@ -12,87 +12,80 @@ from multiprocessing import Process,Queue
 import time
 from playsound import playsound
 
-CACHE = "/home/test/EnterID.dat"
+CACHE = "EnterID.dat"
 soundplay = Queue()
 
 def logRecord(scan_time,check,scanID):
-    LOGFILE = "/home/test/log/log"+scan_time[:10]+".dat"
-    log = scan_time+","+str(check)+","+scanID+"\n"
-    wlog = open(LOGFILE,"a")
-    wlog.write(log)
-    wlog.close()
-    
+	LOGFILE = "log/"+scan_time[:10]+".dat"
+	log = scan_time+","+str(check)+","+scanID+"\n"
+	wlog = open(LOGFILE,"a")
+	wlog.write(log)
+	wlog.close()
+	
 
 def checkRecord(scanID):
-    rlog = open(CACHE,"r")
-    Enterlog = set(map(str,rlog.readline().split(",")))
-    rlog.close()
+	rlog = open(CACHE,"r")
+	Enterlog = set(map(str,rlog.readline().split(",")))
+	rlog.close()
 
-    checkEntered = bool()
-    if(scanID in Enterlog):
-        Enterlog.remove(scanID)
-        checkEntered = False
-    else:
-        Enterlog.add(scanID)
-        checkEntered = True
+	checkEntered = bool()
+	if(scanID in Enterlog):
+		Enterlog.remove(scanID)
+		checkEntered = False
+	else:
+		Enterlog.add(scanID)
+		checkEntered = True
 
-    rlog = open(CACHE,"w")
-    rlog.writelines(",".join(Enterlog))
-    rlog.close()
+	rlog = open(CACHE,"w")
+	rlog.writelines(",".join(Enterlog))
+	rlog.close()
 
-    return checkEntered
+	return checkEntered
+
+def connect_process(tag,soundplay):
+	if isinstance(tag, nfc.tag.tt3.Type3Tag):
+		try:
+			soundplay.put(0)
+			service_code = 0x09CB
+			date_time = list(map(str,str(datetime.datetime.now())))
+			scan_time = "".join(date_time[:19])
+			sc = nfc.tag.tt3.ServiceCode(service_code >> 6 ,service_code & 0x3f)
+			bc = nfc.tag.tt3.BlockCode(0,service=0)
+			scandata = tag.read_without_encryption([sc],[bc])
+			scanID = scandata[2:10].decode("utf-8")
+			check = checkRecord(scanID)
+			print(scan_time,check,scanID)
+			logRecord(scan_time,check,scanID)
+
+		except Exception as e:
+			print("error: %s" % e)
+	else:
+		print("error: tag isn't Type3Tag")
+
 
 
 def connected(tag):
-  if isinstance(tag, nfc.tag.tt3.Type3Tag):
-    try:
-        service_code = 0x09CB
-        date_time = list(map(str,str(datetime.datetime.now())))
-        scan_time = "".join(date_time[:19])
-        sc = nfc.tag.tt3.ServiceCode(service_code >> 6 ,service_code & 0x3f)
-        bc = nfc.tag.tt3.BlockCode(0,service=0)
-        scandata = tag.read_without_encryption([sc],[bc])
-        scanID = scandata[2:10].decode("utf-8")
-        check = checkRecord(scanID)
-        print(scan_time,check,scanID)
-        logRecord(scan_time,check,scanID)
-
-        #ここで音声鳴らす
-        if(check):
-            #入室
-            soundplay.put(0)
-            print("Enter")
-        else:
-            #退室
-            soundplay.put(1)
-            print("Exit")
-
-
-    except Exception as e:
-      print("error: %s" % e)
-  else:
-    print("error: tag isn't Type3Tag")
-
+	p_connect = Process(target=connect_process,args=(tag,soundplay,))
+	p_connect.start()
+	p_connect.join()
+	return True	
 
 def play(soundplay):
-    sound1 = "./sound/sound1.mp3"
-    sound2 = "./sound/sound2.mp3"
-    while(True):
-        queue = soundplay.get()
-        if(queue == 0):#入室
-            playsound(sound1)
-        elif(queue == 1):#退室
-            playsound(sound2)
+	sound1 = "sound/sound1.mp3"
+	while(True):
+		queue = soundplay.get()
+		if(queue == 0):#入室
+			playsound(sound1)
+		
 
-def scan():
-    while(True):
-        clf = nfc.ContactlessFrontend('usb')
-        clf.connect(rdwr={'on-connect': connected})
-        time.sleep(3)
+
 
 p_play = Process(target=play,args=(soundplay,))
 
-
 if __name__ == "__main__":
-    p_play.start()
-    scan()
+	p_play.start()
+	while(True):
+		clf = nfc.ContactlessFrontend('usb:001:003')
+		clf.connect(rdwr={'on-connect': connected})
+		time.sleep(3)
+
