@@ -16,11 +16,14 @@ CACHE = "EnterID.dat"
 soundplay = Queue()
 
 def logRecord(scan_time,check,scanID):
+    print("logrecode_start")
 	LOGFILE = "log/"+scan_time[:10]+".dat"
 	log = scan_time+","+str(check)+","+scanID+"\n"
+    print("logwrite_start")
 	wlog = open(LOGFILE,"a")
 	wlog.write(log)
-	wlog.close()	
+	wlog.close()
+    print("logwrite_end")
 
 def checkRecord(scanID):
 	rlog = open(CACHE,"r")
@@ -38,7 +41,7 @@ def checkRecord(scanID):
 	rlog = open(CACHE,"w")
 	rlog.writelines(",".join(Enterlog))
 	rlog.close()
-
+    print(Enterlog,"Enterlog")
 	return checkEntered
 
 def connected(tag):
@@ -53,8 +56,9 @@ def connected(tag):
 			scandata = tag.read_without_encryption([sc],[bc])
 			scanID = scandata[2:10].decode("utf-8")
 			check = checkRecord(scanID)
-			print(scan_time,check,scanID)
+			print("checkend",scan_time,check,scanID)
 			logRecord(scan_time,check,scanID)
+            print("logrecord_end")
 
 		except Exception as e:
 			print("error: %s" % e)
