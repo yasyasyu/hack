@@ -7,7 +7,6 @@ import collections as collect
 import datetime
 day = "".join(list(map(str,str(datetime.datetime.now())))[:10])
 URLFILEPATH = "privacy/URLFILE"
-# LOG = "/home/test/log/"+day+".dat"
 LOG = "log/"+day+".dat"
 
 URLfile = open(URLFILEPATH,'r')
