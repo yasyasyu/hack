@@ -63,11 +63,11 @@ def connected(tag):
     return True	
 
 def play(soundplay):
-    sound1 = "sound/sound1.mp3"
+    sound = "sound/sound.mp3"
     while(True):
         queue = soundplay.get()
         if(queue == 0):#入室
-            playsound(sound1)
+            playsound(sound)
         
 p_play = Process(target=play,args=(soundplay,))
 
