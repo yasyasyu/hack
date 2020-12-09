@@ -44,13 +44,13 @@ def checkRecord(scanID):
 def connected(tag):
     if isinstance(tag, nfc.tag.tt3.Type3Tag):
         try:
-            soundplay.put(0)
-            service_code = 0x09CB
             date_time = list(map(str,str(datetime.datetime.now())))
-            scan_time = "".join(date_time[:19])
+            service_code = 0x09CB
             sc = nfc.tag.tt3.ServiceCode(service_code >> 6 ,service_code & 0x3f)
             bc = nfc.tag.tt3.BlockCode(0,service=0)
             scandata = tag.read_without_encryption([sc],[bc])
+            soundplay.put(0)
+            scan_time = "".join(date_time[:19])
             scanID = scandata[2:10].decode("utf-8")
             check = checkRecord(scanID)
             print(scan_time,check,scanID)
