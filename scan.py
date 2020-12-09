@@ -41,7 +41,7 @@ def checkRecord(scanID):
 
 	return checkEntered
 
-def connect_process(tag,soundplay):
+def connected(tag):
 	if isinstance(tag, nfc.tag.tt3.Type3Tag):
 		try:
 			soundplay.put(0)
@@ -60,13 +60,6 @@ def connect_process(tag,soundplay):
 			print("error: %s" % e)
 	else:
 		print("error: tag isn't Type3Tag")
-
-
-
-def connected(tag):
-	p_connect = Process(target=connect_process,args=(tag,soundplay,))
-	p_connect.start()
-	p_connect.join()
 	return True	
 
 def play(soundplay):
